@@ -76,6 +76,8 @@ function displayCurrent(weather) {
     cardText.children("#uvIndex").text(`Current UV Index: ${weather.current.uvi}`)
 }
 
+
+
 function fiveDay(weather){
     var forecastElement = $("#five")
     for (let index = 0; index < 5; index++) {
@@ -84,7 +86,7 @@ function fiveDay(weather){
         var dailyStuff = weather.daily[index]
         console.log(dailyStuff)
         
-        var dailyTime = new Date(dailyStuff.dt * 1000).classList.$("date")
+        var dailyTime = new Date(dailyStuff.dt * 1000)
         forecastDiv.text(dailyTime)
 
         var forecastImg =  $("<img></img>")
@@ -110,9 +112,23 @@ function fiveDay(weather){
         forecastDiv.append(forecastImg)
         forecastElement.append(forecastDiv)
 
+        // let fiveDayCard =`
+        // <div class="col-md-2 m-2 py-3 card text-white bg-primary">
+        //     <div class="card-body p-1">
+        //         <h5 class="card-title">` + dailyTime(data.list[i].dt * 1000).format("MM/DD/YYYY") + `</h5>
+        //         <img src="https://openweathermap.org/img/wn/` + data.list[i].weather[0].icon + `.png" alt="rain">
+        //         <p class="card-text">Temp: ` + tempP(data.list[i].main.temp) + `</p>
+        //         <p class="card-text">Humidity: ` + humidP(data.list[i].main.humidity) + `</p>
+        //     </div>
+        // </div>
+        // `;
+        //     // append the day to the five-day forecast
+        //     $("#five-day").append(fiveDayCard);
+
     }
 
 }
+
 
 
 function updatePrevUI(array) {

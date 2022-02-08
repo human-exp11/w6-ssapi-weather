@@ -27,9 +27,9 @@ THEN I am again presented with current and future conditions for that city
 * Utilized both BootStrap and JQuery to create my HTML and styling
 * Traversed the DOM to refer to specific code 
 * Utilized a forloop to call upon data related to the 5-Day Forecast
-* Created a function to call previous city data from local storage
+* Attemped to create a function to call previous city data from local storage
 * Created README file with link & screenshot
 
 [Live-site] (https://human-exp11.github.io/w6-ssapi-weather/)
 
-![Screenshot](./git-images/wds.png.)
+![Screenshot] (./w6-ssapi-weather/git-images/weatherss.png)
