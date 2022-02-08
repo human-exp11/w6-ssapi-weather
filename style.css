@@ -17,6 +17,19 @@ header.navbar {
     margin: 100px 0px;
 }
 
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+ul#prev-city-list {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+}
 
 .display {
     text-align: center;
