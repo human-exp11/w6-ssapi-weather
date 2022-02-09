@@ -33,4 +33,4 @@ THEN I am again presented with current and future conditions for that city
 
 [Live-site] (https://human-exp11.github.io/w6-ssapi-weather/)
 
-![Screenshot](./w6-ssapi-weather/git-images/ssweathernew.png)
+![Screenshot](./git-images/ssweathernew.png)
