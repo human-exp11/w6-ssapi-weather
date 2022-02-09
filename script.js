@@ -15,8 +15,8 @@
 var APIkey = "d695cd030163d3bbeb3c1729339cf830";
 const cityInput = $("#city-submit")
 const cityEl = $("#city-name")
-const prevCityList = $("#prev-cities-container")
-let prevCities = [ ];
+const prevCityList = $("#prev-cities-list")
+let prevCities = [];
 
 function init() {
     // Checking to see if the key already exists, if not, set an empty array converted to a string to localstorage
@@ -36,19 +36,22 @@ function init() {
 function searchHandler(e) {
     e.preventDefault();
     var userCity = $(this).siblings("input").val();
+    if (!userCity) {
+        userCity = $(this).text();
+    }
     var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + userCity + "&appid=" + APIkey;
-    fetch(queryURL).then(function(response){
+    fetch(queryURL).then(function (response) {
         return response.json()
-    }) .then(function(data){
-        console.log (data);
-       var  lat = data.coord.lat
-       var  lon = data.coord.lon
-        var oneCallAPIURL= "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon +  "&units=imperial&appid="+APIkey;
-        fetch(oneCallAPIURL).then(function(response){
+    }).then(function (data) {
+        console.log(data);
+        var lat = data.coord.lat
+        var lon = data.coord.lon
+        var oneCallAPIURL = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&units=imperial&appid=" + APIkey;
+        fetch(oneCallAPIURL).then(function (response) {
             return response.json()
-        }) .then(function(data){
-            console.log (data);
-            displayCurrent(data);
+        }).then(function (data) {
+            console.log(data);
+            displayCurrent(data, userCity);
             fiveDay(data);
         })
         if (prevCities.includes(userCity) === false) {
@@ -62,7 +65,7 @@ function searchHandler(e) {
     })
 }
 
-function displayCurrent(weather) {
+function displayCurrent(weather, userCity) {
     var currentWeatherEl = $("#currentWeather")
     var cardText = currentWeatherEl.children("div.card-body")
     cardText.children("h5").text(weather.timezone)
@@ -74,56 +77,58 @@ function displayCurrent(weather) {
     cardText.children("#humidity").text(`Current Humidity: ${weather.current.humidity}`)
     cardText.children("#windSpeed").text(`Current Wind Speed: ${weather.current.wind_speed} mph`)
     cardText.children("#uvIndex").text(`Current UV Index: ${weather.current.uvi}`)
+    if (weather.current.uvi <= 2) {
+        cardText.children("#uvIndex").css("background-color", "green")
+
+
+    } else if (weather.current.uvi > 2 || weather.current.uvi < 6) {
+        cardText.children("#uvIndex").css("background-color", "yellow")
+    } else if (weather.current.uvi > 5 || weather.current.uvi < 8) {
+        cardText.children("#uvIndex").css("background-color", "orange")
+    } else if (weather.current.uvi > 7 || weather.current.uvi < 11) { 
+        cardText.children("#uvIndex").css("background-color", "red")
+    }
+
+
+
+    if (prevCities.includes(userCity) === false) {
+        prevCities.push(userCity);
+    }
+
+    // Uodating preCities in localStorage
+    localStorage.setItem("prevCities", JSON.stringify(prevCities));
+
+    updatePrevUI(prevCities);
+
 }
 
 
 
-function fiveDay(weather){
+function fiveDay(weather) {
     var forecastElement = $("#five")
-    for (let index = 0; index < 5; index++) {
-       var forecastDiv =  $("<div></div>")
-        // console.log(weather)
-        var dailyStuff = weather.daily[index]
-        console.log(dailyStuff)
+    forecastElement.empty();
+    for (let i = 0; i < 5; i++) {
         
+        console.log(weather)
+        var dailyStuff = weather.daily[i]
+      
+
         var dailyTime = new Date(dailyStuff.dt * 1000)
-        forecastDiv.text(dailyTime)
+      
 
-        var forecastImg =  $("<img></img>")
-        var fiveDayUrl = "http://openweathermap.org/img/wn/" + weather.current.weather[0].icon + "@2x.png"
-        forecastImg.attr("src", fiveDayUrl)
+        let fiveDayCard = `
+        <div class="col-md-2 m-2 py-3 card text-white bg-primary">
+            <div class="card-body p-1">
+                <h5 class="card-title"> ${dailyTime} </h5>
+                <img src="https://openweathermap.org/img/wn/${dailyStuff.weather[0].icon}.png" alt="rain">
+                <p class="card-text">Temp:  ${dailyStuff.temp.day}</p>
+                <p class="card-text">Wind Speed:  ${dailyStuff.wind_speed}</p>
+                <p class="card-text">Humidity:  ${dailyStuff.humidity}</p>
+            </div>
+        </div>
+        `;
+        forecastElement.append(fiveDayCard);
 
-        var tempP = $("<p></p>")
-        var dailyTemp = dailyStuff.temp.day
-        tempP.text(dailyTemp)
-
-        var windP = $("<p></p>")
-        var dailyWind = dailyStuff.wind_speed
-        windP.text(dailyWind)
-
-        var humidP = $("<p></p>")
-        var dailyHumid = dailyStuff.temp.humidity
-        humidP.text(dailyHumid)
-
-        
-        forecastElement.append(windP)
-        forecastElement.append(humidP)
-        forecastElement.append(tempP)
-        forecastDiv.append(forecastImg)
-        forecastElement.append(forecastDiv)
-
-        // let fiveDayCard =`
-        // <div class="col-md-2 m-2 py-3 card text-white bg-primary">
-        //     <div class="card-body p-1">
-        //         <h5 class="card-title">` + dailyTime(data.list[i].dt * 1000).format("MM/DD/YYYY") + `</h5>
-        //         <img src="https://openweathermap.org/img/wn/` + data.list[i].weather[0].icon + `.png" alt="rain">
-        //         <p class="card-text">Temp: ` + tempP(data.list[i].main.temp) + `</p>
-        //         <p class="card-text">Humidity: ` + humidP(data.list[i].main.humidity) + `</p>
-        //     </div>
-        // </div>
-        // `;
-        //     // append the day to the five-day forecast
-        //     $("#five-day").append(fiveDayCard);
 
     }
 
@@ -135,21 +140,11 @@ function updatePrevUI(array) {
     prevCityList.empty();
 
     for (let i = 0; i < array.length; i++) {
-        let prevCityItem = document.createElement("li");
-        prevCityIten.textContent = array[i];
+        let prevCityItem = document.createElement("button");
+        prevCityItem.textContent = array[i];
         prevCityList.append(prevCityItem);
     }
 }
 
-
-document.addEventListener('click', prevCityListener);
-
-function prevCityListener(event) {
-    var element = event.target;
-    if (element.tagName ==  element.classList.contains("btn-info")) {
-        userCity.val(element.textContent);
-        searchHandler();
-    }
-}
-
+$("#prev-cities-list").on("click", "button", searchHandler)
 $("button").on("click", searchHandler)
